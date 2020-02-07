@@ -1,6 +1,6 @@
 import {expect} from 'chai';
-import {AI} from "../src/AI";
-
+import {ActionType, AI} from "../src/AI";
+import {Messages} from "../src/Messages";
 
 describe("AI", () => {
     describe("parseAction", () => {
@@ -8,7 +8,7 @@ describe("AI", () => {
 
         it('should throw on empty input', () => {
             input = '';
-            expect(() => AI.parseAction(input)).to.throw('non empty input string is required')
+            expect(() => AI.parseAction(input)).to.throw(Messages.MESSAGE_ROOM_NO_INPUT)
         });
 
         it('should throw on no quotes', () => {
@@ -40,6 +40,13 @@ describe("AI", () => {
 
             expect(result.title).to.be.equal("title");
             expect(result.items.length).to.be.equal(3);
+        });
+
+        it('should parse 2 vote items', () => {
+            input = ' Help ';
+            const result = AI.parseAction(input);
+
+            expect(result.type).to.be.equal(ActionType.ACTION_HELP);
         });
     });
 });

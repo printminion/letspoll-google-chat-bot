@@ -130,19 +130,27 @@ export class UI {
             widget.keyValue.button.textButton.onClick.action.parameters[1].value = value;
         }
 
-        // update stats
+        // count stats
+        let allVotes = [];
         let allVotesCount = 0;
-        for (let VoteItemId = 0; VoteItemId < cards[0].sections[0].widgets.length; VoteItemId++) {
-            const widget = cards[0].sections[0].widgets[VoteItemId];
+        for (let voteItemId = 0; voteItemId < cards[0].sections[0].widgets.length; voteItemId++) {
+            const widget = cards[0].sections[0].widgets[voteItemId];
             const votes = widget.keyValue.button.textButton.onClick.action.parameters[1].value;
 
             if (votes == "[]") {
-                widget.keyValue.bottomLabel = "0";
+                allVotes.push(0);
+                continue;
             }
 
             const votesInCategory: Array<string> = JSON.parse(votes);
+            allVotes.push(votesInCategory.length);
             allVotesCount = allVotesCount + votesInCategory.length;
-            widget.keyValue.bottomLabel = "" + votesInCategory.length;
+        }
+
+        for (let voteItemId = 0; voteItemId < cards[0].sections[0].widgets.length; voteItemId++) {
+            const widget = cards[0].sections[0].widgets[voteItemId];
+            const value = allVotes[voteItemId];
+            widget.keyValue.bottomLabel = UI.renderProgressbar(allVotesCount, value);
         }
 
         return {
@@ -151,5 +159,23 @@ export class UI {
             },
             cards: newCard
         };
+    }
+
+    static renderProgressbar(total: number, value: number): string {
+        const totalBlocksToDisplay = 10;
+        let blocksToDisplay = 0;
+        let blocksToFillIn = totalBlocksToDisplay;
+        let percent = 0;
+
+        if (total > 0 && value > 0) {
+            percent = value / (total / 100);
+            blocksToDisplay = (percent / (100 / totalBlocksToDisplay));
+            blocksToDisplay = Math.ceil(blocksToDisplay);
+            blocksToFillIn = totalBlocksToDisplay - blocksToDisplay;
+        }
+
+        const progressBar = "█".repeat(blocksToDisplay) + "░".repeat(blocksToFillIn);
+
+        return progressBar + " " + percent + "% (" + value + ")";
     }
 }
