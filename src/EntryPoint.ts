@@ -1,6 +1,7 @@
 import {chat_v1} from "googleapis";
-import {AI} from "./AI";
+import {ActionType, AI} from "./AI";
 import {UI} from "./UI";
+import {Messages} from "./Messages";
 
 /**
  * Responds to a MESSAGE event in Hangouts Chat.
@@ -8,23 +9,32 @@ import {UI} from "./UI";
  * @param {chat_v1.Schema$DeprecatedEvent} event the event object from Hangouts Chat
  * @return {chat_v1.Schema$Message}
  */
-function onMessage(event: chat_v1.Schema$DeprecatedEvent): chat_v1.Schema$Message {
-    // let name = "";
+export function onMessage(event: chat_v1.Schema$DeprecatedEvent): chat_v1.Schema$Message {
 
     if (event.space.type == "DM") {
-        // name = "You";
-        const message = "Add me to a group for more fun";
-        // name + " said \"" + event.message.text + "\"";
-        // name = event.user.displayName;
-
-        return {text: message};
+        return {text: Messages.MESSAGE_HELP};
     }
 
-    const action = AI.parseAction(event.message.text);
-
+    let action;
+    let message = "unknown state";
+    try {
+        action = AI.parseAction(event.message.text);
+    } catch (e) {
+        return {
+            text: e.message
+        };
+    }
     console.log("action", action, JSON.stringify(action));
 
-    return UI.createVoteCardMessage(action)
+    if (action.type == ActionType.ACTION_START_POLL) {
+        return UI.createVoteCardMessage(action);
+    }
+
+    if (action.type == ActionType.ACTION_HELP) {
+        return {text: Messages.MESSAGE_HELP};
+    }
+
+    return {text: message};
 }
 
 /**
@@ -34,20 +44,15 @@ function onMessage(event: chat_v1.Schema$DeprecatedEvent): chat_v1.Schema$Messag
  * @return {chat_v1.Schema$Message}
  */
 function onAddToSpace(event: chat_v1.Schema$DeprecatedEvent): chat_v1.Schema$Message {
-    var message = "";
+    let message = Messages.MESSAGE_HOW_TO_START;
 
-    // if (event.space.type == "DM") {
-    //     message = "Thank you for adding me to a DM, " + event.user.displayName + "!";
-    // } else {
-    // message = "Thank you for adding me to " + event.space.displayName;
-    message = "Hey there 👋! Here's how to create a poll with Polly: *@LetsPoll \"What should we order for lunch?\" \"Burgers\" \"Pizza\" \"Sushi\" *\n" +
-        "We'll publish the poll right in this room. ";
-    // }
+    if (event.space.type == "DM") {
+        return {text: Messages.MESSAGE_HELP};
+    }
 
-    // if (event.message) {
-    //     // Bot added through @mention.
-    //     message = message + " and you said: \"" + event.message.text + "\"";
-    // }
+    if (event.message) {
+        message = Messages.MESSAGE_HOW_TO_START;
+    }
 
     return {text: message};
 }
@@ -59,6 +64,8 @@ function onAddToSpace(event: chat_v1.Schema$DeprecatedEvent): chat_v1.Schema$Mes
  */
 function onRemoveFromSpace(event: chat_v1.Schema$DeprecatedEvent) {
     console.info("Bot removed from ", event.space.name);
+    const message = "Thank you for usage ;)";
+    return {text: message};
 }
 
 /**
@@ -67,23 +74,18 @@ function onRemoveFromSpace(event: chat_v1.Schema$DeprecatedEvent) {
  * @return {chat_v1.Schema$Message} payload for appropriate vote card, depending on user input
  * @see developers.google.com/hangouts/chat/how-tos/cards-onclick
  */
-function onCardClick(event: chat_v1.Schema$DeprecatedEvent): chat_v1.Schema$Message {
+export function onCardClick(event: chat_v1.Schema$DeprecatedEvent): chat_v1.Schema$Message {
     console.log("onCardClick", JSON.stringify(event));
 
-    // Create a new vote card when 'NEW' button is clicked.
+    // Create a new vote card when 'VOTE' button is clicked.
     if (event.action.actionMethodName === 'vote') {
         const itemId = parseInt(event.action.parameters[0].value);
         const result = UI.updateVoteCardMessage(event.message.cards, event.user, itemId, true);
 
-        Logger.log(result);
+        // Logger.log(result);
         console.log("onCardClick", JSON.stringify(result));
         return result;
     }
-
-    // Updates the card in-place when '+1' or '-1' button is clicked.
-    // let voteCount = +event.action.parameters[0].value;
-    // event.action.actionMethodName === 'upvote' ? ++voteCount : --voteCount;
-    // return UI.updateVoteCardMessage(event.user.displayName, 1, true);
 
     return {};
 }

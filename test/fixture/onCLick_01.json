@@ -1,0 +1,138 @@
+{
+  "message": {
+    "cards": [
+      {
+        "sections": [
+          {
+            "widgets": [
+              {
+                "keyValue": {
+                  "content": "Burgers",
+                  "button": {
+                    "textButton": {
+                      "text": "VOTE",
+                      "onClick": {
+                        "action": {
+                          "actionMethodName": "vote",
+                          "parameters": [
+                            {
+                              "value": "0",
+                              "key": "id"
+                            },
+                            {
+                              "value": "[]",
+                              "key": "voters"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "keyValue": {
+                  "content": "Pizza",
+                  "button": {
+                    "textButton": {
+                      "onClick": {
+                        "action": {
+                          "actionMethodName": "vote",
+                          "parameters": [
+                            {
+                              "key": "id",
+                              "value": "1"
+                            },
+                            {
+                              "key": "voters",
+                              "value": "[]"
+                            }
+                          ]
+                        }
+                      },
+                      "text": "VOTE"
+                    }
+                  }
+                }
+              },
+              {
+                "keyValue": {
+                  "content": "Sushi",
+                  "button": {
+                    "textButton": {
+                      "onClick": {
+                        "action": {
+                          "actionMethodName": "vote",
+                          "parameters": [
+                            {
+                              "key": "id",
+                              "value": "2"
+                            },
+                            {
+                              "key": "voters",
+                              "value": "[]"
+                            }
+                          ]
+                        }
+                      },
+                      "text": "VOTE"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "header": {
+          "title": "What should we order for lunch?"
+        }
+      }
+    ],
+    "sender": {
+      "avatarUrl": "https://foo.com/-0G68j3vDl8Hw",
+      "name": "users/23456",
+      "displayName": "LetsPoll",
+      "type": "BOT"
+    },
+    "thread": {
+      "retentionSettings": {
+        "state": "PERMANENT"
+      },
+      "name": "spaces/AAAAX5_xtFM/threads/npOLtF9zzh4"
+    },
+    "name": "spaces/AAAAX5_xtFM/messages/npOLtF9zzh4.7OXLe-gAH_s",
+    "space": {
+      "name": "spaces/AAAAX5_xtFM",
+      "threaded": true,
+      "displayName": "test room",
+      "type": "ROOM"
+    }
+  },
+  "action": {
+    "actionMethodName": "vote",
+    "parameters": [
+      {
+        "value": "0",
+        "key": "id"
+      },
+      {
+        "value": "[]",
+        "key": "voters"
+      }
+    ]
+  },
+  "user": {
+    "avatarUrl": "https://foo.com/photo.jpg",
+    "email": "admin@foo.com",
+    "name": "users/123456",
+    "displayName": "Admin foo.com",
+    "type": "HUMAN"
+  },
+  "type": "CARD_CLICKED",
+  "space": {
+    "name": "spaces/AAAAX5_xtFM",
+    "threaded": true,
+    "displayName": "test room",
+    "type": "ROOM"
+  }
+}

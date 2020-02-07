@@ -1,14 +1,33 @@
+import {Messages} from "./Messages";
+
 export interface IVoteAction {
-    title: string,
-    items: string[]
+    type: ActionType
+    title?: string,
+    items?: string[]
+}
+
+export enum ActionType {
+    ACTION_UNKNOWN,
+    ACTION_HELP,
+    ACTION_START_POLL,
 }
 
 export class AI {
     static parseAction(string: string): IVoteAction {
-        let action: IVoteAction = {title: undefined, items: []};
+        let action: IVoteAction = {type: ActionType.ACTION_UNKNOWN, title: undefined, items: []};
+
+        string = string || "";
+
+        // strip bot name
+        string = string.replace("@" + Messages.BOT_NAME, "");
 
         if (!string) {
-            throw new Error("non empty input string is required");
+            throw new Error(Messages.MESSAGE_ROOM_NO_INPUT);
+        }
+
+        if (string.trim().toLowerCase() == "help") {
+            action.type = ActionType.ACTION_HELP;
+            return action;
         }
 
         // count quotes
@@ -42,6 +61,8 @@ export class AI {
         action.title = result[0];
         result.shift();
         action.items = result;
+
+        action.type = ActionType.ACTION_START_POLL;
 
         return action;
     }

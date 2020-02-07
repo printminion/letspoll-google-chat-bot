@@ -1,18 +1,26 @@
 import {expect} from 'chai';
 import {chat_v1} from 'googleapis';
-import {IVoteAction} from "../src/AI";
+import {ActionType, IVoteAction} from "../src/AI";
 import {UI} from "../src/UI";
 
 
 describe("UI", () => {
-    let action: IVoteAction = {title: undefined, items: []};
+    let action: IVoteAction = {
+        type: ActionType.ACTION_UNKNOWN,
+        title: undefined,
+        items: []
+    };
     describe("createVoteCardMessage", () => {
         beforeEach(() => {
 
         });
 
         it('should create message', () => {
-            action = {title: "title", items: ["foo", "bar"]};
+            action = {
+                type: ActionType.ACTION_START_POLL,
+                title: "title",
+                items: ["foo", "bar"]
+            };
 
             const message = UI.createVoteCardMessage(action);
 
@@ -52,7 +60,11 @@ describe("UI", () => {
         let user: chat_v1.Schema$User;
 
         beforeEach(() => {
-            action = {title: "title", items: ["foo", "item 1", "item 2", "item 3", "item 4"]};
+            action = {
+                type: ActionType.ACTION_START_POLL,
+                title: "title",
+                items: ["foo", "item 1", "item 2", "item 3", "item 4"]
+            };
             message = UI.createVoteCardMessage(action);
             user = {
                 name: "user/foo",
@@ -118,6 +130,38 @@ describe("UI", () => {
                     expect(parameters[1].value).equal("[]");
                 }
             }
+        });
+    });
+
+    describe("renderProgressbar", () => {
+        it('render 0%', () => {
+            let result = UI.renderProgressbar(0, 0);
+
+            expect(result).to.equal('░░░░░░░░░░ 0% (0)');
+        });
+
+        it('render 0%', () => {
+            let result = UI.renderProgressbar(1, 0);
+
+            expect(result).to.equal('░░░░░░░░░░ 0% (0)');
+        });
+
+        it('render 10%', () => {
+            let result = UI.renderProgressbar(20, 2);
+
+            expect(result).to.equal('█░░░░░░░░░ 10% (2)');
+        });
+
+        it('render 15%', () => {
+            let result = UI.renderProgressbar(100, 15);
+
+            expect(result).to.equal('██░░░░░░░░ 15% (15)');
+        });
+
+        it('render 100%', () => {
+            let result = UI.renderProgressbar(1, 1);
+
+            expect(result).to.equal('██████████ 100% (1)');
         });
     });
 });
